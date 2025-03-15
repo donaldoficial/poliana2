@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Custos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilo para o botão de voltar */
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-voltar:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para o formulário */
+        #form-custo {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #form-custo .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #form-custo .form-control:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+        }
+
+        #form-custo .btn-primary {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #form-custo .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #form-custo .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para a tabela */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(240, 240, 240, 0.5);
+        }
+
+        /* Estilo para o botão de remover */
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Botão de Voltar -->
+        <button class="btn-voltar mb-4" onclick="navegarPara('dashboard.html')">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </button>
+
+        <h1>Gerenciamento de Custos</h1>
+
+        <!-- Formulário para adicionar custos -->
+        <form id="form-custo" class="mb-5">
+            <div class="mb-3">
+                <label for="tipoCusto" class="form-label">Tipo de Custo</label>
+                <select class="form-control" id="tipoCusto" required>
+                    <option value="energia">Energia</option>
+                    <option value="funcionarios">Funcionários</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="descricao" class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="descricao" required>
+            </div>
+            <div class="mb-3">
+                <label for="valor" class="form-label">Valor</label>
+                <input type="number" class="form-control" id="valor" required>
+            </div>
+            <div class="mb-3">
+                <label for="data" class="form-label">Data</label>
+                <input type="date" class="form-control" id="data" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Adicionar Custo</button>
+        </form>
+
+        <!-- Tabela de Custos -->
+        <h2>Lista de Custos</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo de Custo</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-custos"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Função para navegar entre as páginas
+        function navegarPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        // Função para carregar os custos
+        function carregarCustos() {
+            const custos = JSON.parse(localStorage.getItem('custos')) || [];
+            const tabelaCustos = document.getElementById('tabela-custos');
+            tabelaCustos.innerHTML = '';
+
+            custos.forEach((custo, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${custo.tipoCusto}</td>
+                    <td>${custo.descricao}</td>
+                    <td>R$ ${custo.valor.toFixed(2)}</td>
+                    <td>${custo.data}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="removerCusto(${index})">Remover</button>
+                    </td>
+                `;
+                tabelaCustos.appendChild(row);
+            });
+        }
+
+        // Função para adicionar um custo
+        document.getElementById('form-custo').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const tipoCusto = document.getElementById('tipoCusto').value;
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+            const data = document.getElementById('data').value;
+
+            const custos = JSON.parse(localStorage.getItem('custos')) || [];
+            custos.push({ tipoCusto, descricao, valor, data });
+
+            localStorage.setItem('custos', JSON.stringify(custos));
+
+            alert('Custo adicionado com sucesso!');
+            carregarCustos();
+            document.getElementById('form-custo').reset();
+        });
+
+        // Função para remover um custo
+        function removerCusto(index) {
+            const custos = JSON.parse(localStorage.getItem('custos')) || [];
+            custos.splice(index, 1);
+            localStorage.setItem('custos', JSON.stringify(custos));
+            carregarCustos();
+            alert('Custo removido com sucesso!');
+        }
+
+        // Carrega os custos ao abrir a página
+        carregarCustos();
+    </script>
+</body>
+</html>

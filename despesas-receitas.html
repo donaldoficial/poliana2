@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucros e Despesas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilo para o botão de voltar */
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-voltar:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para a tabela */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(240, 240, 240, 0.5);
+        }
+
+        /* Estilo para os cards de resumo */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-body h5 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6a11cb;
+        }
+
+        .card-body p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2575fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Botão de Voltar -->
+        <button class="btn-voltar mb-4" onclick="navegarPara('dashboard.html')">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </button>
+
+        <h1>Lucros e Despesas</h1>
+
+        <!-- Cards de Resumo -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Total de Receitas</h5>
+                    </div>
+                    <div class="card-body">
+                        <p id="total-receitas">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Total de Despesas</h5>
+                    </div>
+                    <div class="card-body">
+                        <p id="total-despesas">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Lucro Livre</h5>
+                    </div>
+                    <div class="card-body">
+                        <p id="lucro-livre">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Receitas -->
+        <h2>Receitas</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor (R$)</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-receitas"></tbody>
+        </table>
+
+        <!-- Tabela de Despesas -->
+        <h2>Despesas</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo de Despesa</th>
+                    <th>Descrição</th>
+                    <th>Valor (R$)</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-despesas"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Função para navegar entre as páginas
+        function navegarPara(pagina) {
+            window.location.href = pagina;
+        }
+
+        // Carrega as receitas
+        const receitas = JSON.parse(localStorage.getItem('receitas')) || [];
+        const tabelaReceitas = document.getElementById('tabela-receitas');
+        tabelaReceitas.innerHTML = '';
+
+        let totalReceitas = 0;
+        receitas.forEach(receita => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${receita.descricao}</td>
+                <td>R$ ${receita.valor.toFixed(2)}</td>
+                <td>${receita.data}</td>
+            `;
+            tabelaReceitas.appendChild(row);
+            totalReceitas += receita.valor;
+        });
+
+        // Atualiza o total de receitas no card
+        document.getElementById('total-receitas').textContent = `R$ ${totalReceitas.toFixed(2)}`;
+
+        // Carrega as despesas
+        const custos = JSON.parse(localStorage.getItem('custos')) || [];
+        const tabelaDespesas = document.getElementById('tabela-despesas');
+        tabelaDespesas.innerHTML = '';
+
+        let totalDespesas = 0;
+        custos.forEach(custo => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${custo.tipoCusto}</td>
+                <td>${custo.descricao}</td>
+                <td>R$ ${custo.valor.toFixed(2)}</td>
+                <td>${custo.data}</td>
+            `;
+            tabelaDespesas.appendChild(row);
+            totalDespesas += custo.valor;
+        });
+
+        // Atualiza o total de despesas no card
+        document.getElementById('total-despesas').textContent = `R$ ${totalDespesas.toFixed(2)}`;
+
+        // Calcula e exibe o lucro livre
+        const lucroLivre = totalReceitas - totalDespesas;
+        document.getElementById('lucro-livre').textContent = `R$ ${lucroLivre.toFixed(2)}`;
+    </script>
+</body>
+</html>
